@@ -25,9 +25,11 @@ df = pd.read_csv(filepath)
 # drop unneeded column from dataframe
 # source: Stackoverflow, Unable to drop a column from pandas dataframe [duplicate]
 df.drop(['Number'], axis=1, inplace=True)
+print("Done-drop unneeded column from dataframe")
 
 # convert list of stock names from a dataframe into a list
 stocks = df["Name"].tolist()
+print("Done-convert list of stock names from a dataframe into a list")
 
 # get necessary metric from nse library
 # source=https://stackoverflow.com/questions/62300845/how-to-get-multiple-stock-quote-with-symbol-in-python
@@ -35,20 +37,24 @@ lastPrice = {stock: nse.get_quote(stock)['lastPrice'] for stock in stocks}
 companyName = {stock: nse.get_quote(stock)['companyName'] for stock in stocks}
 high52 = {stock: nse.get_quote(stock)['high52'] for stock in stocks}
 low52 = {stock: nse.get_quote(stock)['low52'] for stock in stocks}
+print("Done- get necessary metric from nse library")
 
 # Store in dataframes
 lp = pd.DataFrame(list(lastPrice.items()), columns=['Name', 'listPrice'])
 cname = pd.DataFrame(list(companyName.items()), columns=['Name', 'companyName'])
 h52 = pd.DataFrame(list(high52.items()), columns=['Name', 'high52'])
 l52 = pd.DataFrame(list(low52.items()), columns=['Name', 'low52'])
+print("Done-Store in dataframes")
 
 # Merge dataframes on primary key column, Name to create 1 final dataframe
 a = pd.merge(cname, lp, on='Name')
 b = pd.merge(a, l52, on='Name')
 c = pd.merge(b, h52, on='Name')
+print("Done- Merge dataframes on primary key column, Name to create 1 final dataframe")
 
 # Merge input file and merged dataframe to create a final dataframe
 final = pd.merge(c, df, on='Name')
+print("Done- Merge input file and merged dataframe to create a final dataframe")
 
 # Create bins based on list price
 # source: https://pbpython.com/pandas-qcut-cut.html
@@ -75,7 +81,7 @@ sender_pass = 'QnKeRN7818'
 
 # send to multiple recepients
 # source: https://stackoverflow.com/questions/8856117/how-to-send-email-to-multiple-recipients-using-python-smtplib
-receiver_address = 'anoop.mahajan@gmail.com, patilrupali@gmail.com'
+receiver_address = 'anoop.mahajan@gmail.com, patilrupali@gmail.com, ramchandra.n.mahajan@gmail.com'
 
 # Setup the MIME
 message = MIMEMultipart()
@@ -118,10 +124,15 @@ session.login(sender_address, sender_pass)
 text = message.as_string()
 session.sendmail(sender_address, receiver_address, text)
 session.quit()
-print('Mail Sent')
+print('Done-Mail Sent')
 
 # Extract data into a csv
 final_buy.to_csv("C:/temp/Stock/output.csv")
 
 # open csv for validation
 webbrowser.open('output.csv')
+
+
+#useful links
+#how to create a EC2 instance on AWS: https://praneeth-kandula.medium.com/launching-and-connecting-to-an-aws-ec2-instance-6678f660bbe6
+#scp -i C:/temp/Stock/Trading.pem C:/temp/Stock/Trading.py ec2-user@ec2-54-234-82-254.compute-1.amazonaws.com:/home/ec2-user
